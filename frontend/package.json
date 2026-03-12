@@ -1,0 +1,39 @@
+{
+  "name": "nexus-frontend",
+  "version": "1.0.0",
+  "description": "A frontend project for nexus app",
+  "license": "ISC",
+  "author": "leandro Curioso",
+  "type": "module",
+  "dependencies": {
+    "bootstrap": "^3.4.1",
+    "datatables.net-bs": "^2.3.7",
+    "datatables.net-buttons-bs": "^3.2.6",
+    "datatables.net-colreorder-bs": "^2.1.2",
+    "datatables.net-columncontrol-bs": "^1.2.1",
+    "datatables.net-responsive-bs": "^3.0.8",
+    "datatables.net-scroller-bs": "^2.4.3",
+    "datatables.net-searchpanes-bs": "^2.3.5",
+    "datatables.net-select-bs": "^3.1.3",
+    "datatables.net-staterestore-bs": "^1.4.3",
+    "jquery": "^3.7.1",
+    "jszip": "^3.10.1",
+    "moment": "^2.30.1",
+    "quill": "^2.0.3",
+    "select2": "^4.0.13",
+    "sweetalert2": "^11.26.21"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.cjs --mode production",
+    "serve": "http-server ./ -p 3000",
+    "dev": "webpack --config webpack.config.cjs --mode development --watch"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.4",
+    "http-server": "^14.1.1",
+    "mini-css-extract-plugin": "^2.10.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

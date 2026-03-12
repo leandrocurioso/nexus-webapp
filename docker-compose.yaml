@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    restart: never
+    image: mysql:8.4
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nexus
+      MYSQL_USER: nexususer
+      MYSQL_PASSWORD: nexuspassword
+    profiles:
+      - local

@@ -1,0 +1,102 @@
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h1 class="page-header"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Catálogo de Serviços</h1>
+   
+    <button type="button" id="btn-create-service" data-show-update-block="false" data-modal-title="Criar Serviço" class="btn btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Criar</button>
+    <button type="button" id="btn-update-service-table" class="btn btn-success"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Atualizar</button>
+
+    <hr/>
+
+    <div class="row">
+      <div class="table-responsive">
+        <table id="tb-services" class="table table-striped table-hover">
+            <thead>
+              <tr>
+                  <th>Código</th>
+                  <th>Serviço</th>
+                  <th>Produto</th>
+                  <th>Dependência dos Produto(s)</th>
+                  <th>Time</th>
+                  <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="form-create-service-modal" tabindex="-1" role="dialog" aria-labelledby="form-create-service-modal">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="form-create-service-modal-label">Serviço</h4>
+      </div>
+
+      <form id="form-create-service">
+        <div class="modal-body">
+          <input type="hidden" id="hdn-service-id">
+
+          <div class="form-group">
+            <div class="checkbox">
+                <label>
+                <input type="checkbox" id="chk-service-active" checked type="checkbox"> <strong>Ativo?</strong>
+                </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label for="txt-service-name">Nome do Serviço</label>
+              <input type="text" class="form-control" id="txt-service-name" placeholder="Digite o nome do serviço">
+          </div>
+
+            <div class="form-group">
+              <label for="slt-service-products">Produto</label>
+              <select style="width: 100%;" id="slt-service-products">
+                <option></option>
+              </select>
+            </div>
+
+            <div class="form-group">
+                <label for="slt-dependency-products">Produto(s) Dependente(s)</label>
+                <select multiple style="width: 100%;" id="slt-dependency-products" placeholder="Selecione os produtos depententes">
+                <option></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+              <label>Descrição</label>
+              <div id="txt-service-description" class="base-text-editor"></div>
+            </div>
+
+            <div class="form-group">
+              <label>ORR</label>
+              <div id="txt-service-orr" class="base-text-editor"></div>
+            </div>
+
+            <div class="form-group service-update-section">
+                <label for="txt-service-created-at">Criado em</label>
+                <input type="text" class="form-control" id="txt-service-created-at" disabled>
+            </div>
+
+              <div class="form-group service-update-section">
+                <label for="txt-service-updated-at">Atualizado em</label>
+                <input type="text" class="form-control" id="txt-service-updated-at" disabled>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-service-clear-form" class="btn btn-warning"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span> Limpar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-circle-arrow-up" aria-hidden="true"></span> Fechar</button>
+          <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Salvar</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+</div>
+
