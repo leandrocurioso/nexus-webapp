@@ -16,8 +16,8 @@ class ProductsV1Route {
         try {
             const [rows] = await this.db.query('SELECT * FROM products');
             res.json(rows);
-        } catch (e) {
-            res.status(500).json({ error: e.message });
+        } catch (err) {
+            throw err;
         }
     }
 

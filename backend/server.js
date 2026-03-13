@@ -10,8 +10,8 @@ import { initDb } from './db.js';
 import TeamsV1Route from './routes/teams-v1-route.js';
 import ProductsV1Route from './routes/products-v1-route.js'
 import ServicesV1Route from './routes/services-v1-route.js'
-import ProjectsV1Route from './routes/projects-v1-route.js'
 import JourneysV1Route from './routes/journeys-v1-route.js'
+import JourneyCategoriesV1Route from './routes/journey-categories-v1-route.js'
 
 import ServiceRepository from "./repositories/services-repository.js";
 import ProductsRepository from "./repositories/products-repository.js";
@@ -43,8 +43,8 @@ initDb()
             new TeamsV1Route(app, db),
             new ProductsV1Route(app, db),
             new ServicesV1Route(app, serviceRepository, productsRepository),
-            new ProductsV1Route(app, serviceRepository, productsRepository),
             new JourneysV1Route(app, journeysRepository, journeyCategoriesRepository, projectsRepository, serviceRepository, productsRepository),
+            new JourneyCategoriesV1Route(app, journeyCategoriesRepository),
         ];
         
         routes.forEach(route => {

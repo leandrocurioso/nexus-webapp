@@ -19,6 +19,7 @@ import PageContent from "../html-content/page-content/page-content.js";
 import PageMainContent from "../html-content/page-main-content/page-content.js";
 import PageServicesContent from "../html-content/page-services-content/page-services-content.js";
 import PageJourneysContent from "../html-content/page-journeys-content/page-journeys-content.js";
+import PageJourneyCategoriesContent from "../html-content/page-journey-categories-content/page-journey-categories-content.js";
 
 $(function($e) {
 
@@ -46,6 +47,7 @@ $(function($e) {
     $componentMap.set("PageMainContent", new PageMainContent($document));
     $componentMap.set("PageServicesContent", new PageServicesContent($document, apiServerHttpClient));
     $componentMap.set("PageJourneysContent", new PageJourneysContent($document, apiServerHttpClient));
+    $componentMap.set("PageJourneyCategoriesContent", new PageJourneyCategoriesContent($document, apiServerHttpClient));
 
     loadComponent($document, getHandler("HeaderContent"));
     loadComponent($document, getHandler("PageContent"), {
@@ -54,6 +56,7 @@ $(function($e) {
             loadComponent($document, getHandler("PageMainContent"));
             loadComponent($document, getHandler("PageServicesContent"));
             loadComponent($document, getHandler("PageJourneysContent"));
+            loadComponent($document, getHandler("PageJourneyCategoriesContent"));
         }
     });
 

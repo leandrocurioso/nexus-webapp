@@ -18,27 +18,35 @@ class ServicesV1Route {
     }
 
     async getServices(req, res) {
-        res.json({ 
-            services: await this.serviceRepository.list(),
-            products: await this.productsRepository.list()
-        });
+        try {
+            res.json({ 
+                services: await this.serviceRepository.list(),
+                products: await this.productsRepository.list()
+            });
+        } catch (err) {
+            throw err;
+        }
     }
 
     async getService(req, res) {
-          const validationsErrors = [];
+        try {
+            const validationsErrors = [];
 
-        // Validate 
-        if (!isValidInt(req.params.id)) {
-            validationsErrors.push("O id do serviço é inválido!");
-        }
+            // Validate 
+            if (!isValidInt(req.params.id)) {
+                validationsErrors.push("O id do serviço é inválido!");
+            }
 
-        if (validationsErrors.length > 0) {
-            return res.status(400).json({
-                errors: validationsErrors
-            });
+            if (validationsErrors.length > 0) {
+                return res.status(400).json({
+                    errors: validationsErrors
+                });
+            }
+            const service = await this.serviceRepository.getById(req.params.id);
+            res.json(service);
+        } catch (err) {
+            throw err;
         }
-        const service = await this.serviceRepository.getById(req.params.id);
-        res.json(service)
     }
 
     async postService(req, res) {
