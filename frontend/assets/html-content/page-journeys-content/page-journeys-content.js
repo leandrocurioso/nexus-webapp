@@ -5,10 +5,13 @@ import jszip from 'jszip';
 
 class PageJourneysContent extends Content {
 
-    constructor($document, apiServerHttpClient) {
-        super($document);
+    constructor(options, apiServerHttpClient) {
+        super(Object.assign({}, {
+            uri: "/journeys",
+            contentName: "PageJourneysContent",
+            contentPath: "assets/html-content/page-journeys-content/page-journeys-content.html",
+        }, options));
         this.apiServerHttpClient = apiServerHttpClient;
-
     }
 
     once() {
@@ -27,9 +30,6 @@ class PageJourneysContent extends Content {
             });
 
             this.setSelect2Multiple("#slt-related-journey-services", "Selecione os serviço(s)");
-
-            this.txtJourneyDescriptionQuill = this.setHtmlEditor('#txt-journey-description');
-            this.txtJourneySloQuill = this.setHtmlEditor('#txt-journey-slo');
 
             $('#form-create-journey').on('submit', async(event) =>{
                 event.preventDefault();
@@ -118,7 +118,8 @@ class PageJourneysContent extends Content {
         const item = await this.apiServerHttpClient.getJourneyViewV1(id);
         if (item) {
             $("#modal-view-journey-name").text(item.journey.journey_name);
-            $("#modal-view-journey-category").text(item.journey.journey_category_name);
+            $("#modal-view-journey-category").text(item.journey.journey_category_name).attr("href", `/journey-categories?journey_category_id=${item.journey.journey_category_id}`);
+
             $("#modal-view-journey-project").text(item.journey.project_name);
 
             if (item.journey.journey_description && this.stripTags(item.journey.journey_description).trim().length > 0) {
@@ -171,7 +172,7 @@ class PageJourneysContent extends Content {
 
                 itemsHTML += `
                     <li class="list-group-item list-group-item-service">
-                        <a style="font-size:20px;" href="?service_id=${service.service_id}#services">${index+1} - ${service.service_name}</a>
+                        <a style="font-size:20px;" target="_blank" href="/services?service_id=${service.service_id}">${index+1} - ${service.service_name}</a>
                         <p class="bold-font" style="margin-bottom:0px;">Produto</p>
                         <div class="label-center-container">
                             <span class="label label-success">${service.product_name}</span>
@@ -182,7 +183,7 @@ class PageJourneysContent extends Content {
                             <span class="label label-success">${service.team_name}</span>
                         </div>
                       
-                
+    
                         ${depHtml}
                     </li>
                 `;
@@ -199,9 +200,9 @@ class PageJourneysContent extends Content {
         }   
     }
 
-    onLoad(event, options) {
+    init(options) {
         this.once();
-        if (options.loadData) {
+        if (options.load) {
             this.loadGrid();
         }
     }
@@ -216,8 +217,8 @@ class PageJourneysContent extends Content {
             project_id: $("#slt-journey-projects").val(),
             journey_category_id: $("#slt-journey-categories").val(),
             related_journey_service_ids: $("#slt-related-journey-services").val().filter(v => v.trim() !== '').join(","),
-            journey_description: this.txtJourneyDescriptionQuill.root.innerHTML,
-            journey_slo: this.txtJourneySloQuill.root.innerHTML,
+            journey_description: $('#txt-journey-description').val(),
+            journey_slo: $('#txt-journey-slo').val(),
             journey_critical: $("#chk-journey-critical").is(":checked"),
             journey_integrated_test: $("#chk-journey-integrated-test").is(":checked"),
         };
@@ -290,8 +291,8 @@ class PageJourneysContent extends Content {
             .val('');
 
         $("#hdn-journey-id").val("")
-        this.txtJourneyDescriptionQuill.setContents([]);
-        this.txtJourneySloQuill.setContents([]);
+        $('#txt-journey-description').val("");
+         $('#txt-journey-slo').val("");
         $('#slt-journey-projects').val(null).trigger('change');
         $("#slt-related-journey-services").val([]).trigger("change");
         $("#slt-journey-categories").val(null).trigger('change');
@@ -341,19 +342,19 @@ class PageJourneysContent extends Content {
                 $("#slt-related-journey-services").val(order).trigger("change");
             }
             
-            this.txtJourneyDescriptionQuill.root.innerHTML = item.journey_description;
-            this.txtJourneySloQuill.root.innerHTML = item.journey_slo;
+            $('#txt-journey-description').val(item.journey_description);
+             $('#txt-journey-slo').val(item.journey_slo);
             $("#form-create-journey-modal").modal("show");
             $("#chk-journey-active").prop("checked", item.journey_active);
             $("#chk-journey-critical").prop("checked", item.journey_critical);
             $("#chk-journey-integrated-test").prop("checked", item.journey_integrated_tests);
 
             if (item.journey_created_at) {
-                $("#txt-journey-created-at").val(item.journey_created_at);
+                $("#txt-journey-created-at").val(this.toPtBrDatetime(item.journey_created_at));
             } 
 
             if (item.journey_created_at !== item.journey_updated_at) {
-                $("#txt-journey-updated-at").val(item.journey_updated_at);
+                $("#txt-journey-updated-at").val(this.toPtBrDatetime(item.journey_updated_at));
             } else {
                 $("#txt-journey-updated-at").val("Ainda não atualizado");
             }
@@ -391,7 +392,7 @@ class PageJourneysContent extends Content {
                 const serv = services[services.findIndex(x => x.service_id == splitedServices[index])];
                 if (serv) {
                     itemsHTML += `
-                        <li class="list-group-item"><a href="?service_id=${serv.service_id}#services">${index+1} - ${serv.service_name}</a></li>
+                        <li class="list-group-item"><a target="_blank" href="/services?service_id=${serv.service_id}">${index+1} - ${serv.service_name}</a></li>
                     `;
                 }                 
             }
@@ -402,7 +403,7 @@ class PageJourneysContent extends Content {
     async loadGrid() {
         try {
             const results = await this.apiServerHttpClient.getJourneysV1();
-        
+
             const tbody = this.$document.find('#tb-journeys tbody');
             tbody.html("");
 
@@ -412,7 +413,7 @@ class PageJourneysContent extends Content {
 
             // Populate table
             this.journeyDatatable.clear().draw();
-                       
+
             for (const item of results.journeys) {
                 this.journeyDatatable.row.add([
                     item.journey_id,
@@ -438,7 +439,7 @@ class PageJourneysContent extends Content {
             // Populate journey categories select field
             $("#slt-journey-categories").html("<option></option>");
             for (const jc of results.journey_categories) {
-                $("#slt-journey-categories").append(`<option value="${jc.id}">${jc.name}</option>`);
+                $("#slt-journey-categories").append(`<option value="${jc.journey_category_id}">${jc.journey_category_name}</option>`);
             }
 
             // Populate related journey services select field

@@ -81,7 +81,8 @@ class JourneysRepository extends Repository {
                 critical = ?,
                 slo = ?,
                 active = ?,
-                integrated_tests = ?
+                integrated_tests = ?,
+                updated_at = NOW()
             WHERE 
                 id = ?;
         `;

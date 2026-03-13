@@ -5,9 +5,29 @@ import jszip from 'jszip';
 
 class PageJourneyCategoriesContent extends Content {
 
-    constructor($document, apiServerHttpClient) {
-        super($document);
+    constructor(options, apiServerHttpClient) {
+        super(Object.assign({}, {
+            uri: "/journey-categories",
+            contentName: "PageJourneyCategoriesContent",
+            contentPath: "assets/html-content/page-journey-categories-content/page-journey-categories-content.html",
+        }, options));
         this.apiServerHttpClient = apiServerHttpClient;
+    }
+
+    async viewEdit() {
+        const params = new URLSearchParams(window.location.search);
+
+        // Get a specific value
+        const journeyCategoryId = params.get('journey_category_id');
+ 
+        if (journeyCategoryId &&  journeyCategoryId.toLowerCase()) {
+
+            this.resetForm();
+            var text = "Editar Categoria de Jornada";
+            await this.get(journeyCategoryId);
+            $('#form-create-journey-category-modal-label').text(text);
+            $('.journey-category-update-section').show()
+        }
     }
 
     once() {
@@ -17,14 +37,12 @@ class PageJourneyCategoriesContent extends Content {
 
             this.journeyCategoryDatatable = this.setDataTable('#tb-journey-categories');
             
-            this.txtJourneyCategoryDescriptionQuill = this.setHtmlEditor('#txt-journey-category-description');
-
             $('#form-create-journey-category').on('submit', async(event) =>{
                 event.preventDefault();
                 await this.save();
             });
-
-            $(document).on('click', ".btn-grid-delete-journey-category", async(event) =>{
+       
+            this.$document.on('click', ".btn-grid-delete-journey-category", async(event) =>{
                 const id = $(event.currentTarget).data("id");
                 await Swal.fire({
                     title: "Deseja realmente deletar o registro?",
@@ -86,17 +104,18 @@ class PageJourneyCategoriesContent extends Content {
                 } else {
                     $('.journey-category-update-section').hide()
                 }
-                $("#form-create-journey-category-modal").modal("show");
             })
 
         }
         this.onceExecuted = true;
     }
 
-    onLoad(event, options) {
+    init(options) {
         this.once();
-        if (options.loadData) {
-            this.loadGrid();
+        if (options.load) {
+            this.loadGrid().then(async () => {
+                await this.viewEdit();
+            });
         }
     }
 
@@ -107,7 +126,7 @@ class PageJourneyCategoriesContent extends Content {
         const payload = {
             active: $("#chk-journey-category-active").is(":checked"),
             journey_category_name: $("#txt-journey-category-name").val().trim(),
-            journey_category_description: this.txtJourneyCategoryDescriptionQuill.root.innerHTML,
+            journey_category_description: $('#txt-journey-category-description').val()
         };
 
         const id = parseInt($("#hdn-journey-category-id").val(), 10);
@@ -163,7 +182,7 @@ class PageJourneyCategoriesContent extends Content {
             .val('');
 
         $("#hdn-journey-category-id").val("")
-        this.txtJourneyCategoryDescriptionQuill.setContents([]);
+        $('#txt-journey-category-description').val("");
         $("#chk-journey-category-active").prop("checked", true);
     }
 
@@ -193,26 +212,25 @@ class PageJourneyCategoriesContent extends Content {
 
     async get(id) {
         const item = await this.apiServerHttpClient.getJourneyCategoryV1(id);
-
         if (item) {
             $("#hdn-journey-category-id").val(item.journey_category_id)
             $('.journey-category-update-section').show();
             $("#txt-journey-category-name").val(item.journey_category_name);
      
-            this.txtJourneyCategoryDescriptionQuill.root.innerHTML = item.journey_category_description;
-
-            $("#form-create-journey-category-modal").modal("show");
+            $('#txt-journey-category-description').val(item.journey_category_description);
             $("#chk-journey-category-active").prop("checked", item.journey_category_active);
 
             if (item.journey_category_created_at) {
-                $("#txt-journey-category-created-at").val(item.journey_category_created_at);
+                $("#txt-journey-category-created-at").val(this.toPtBrDatetime(item.journey_category_created_at));
             } 
 
             if (item.journey_category_created_at !== item.journey_category_updated_at) {
-                $("#txt-journey-category-updated-at").val(item.journey_category_updated_at);
+                $("#txt-journey-category-updated-at").val(this.toPtBrDatetime(item.journey_category_updated_at));
             } else {
                 $("#txt-journey-category-updated-at").val("Ainda não atualizado");
             }
+
+            $("#form-create-journey-category-modal").modal("show");
 
         }
     }
@@ -220,7 +238,7 @@ class PageJourneyCategoriesContent extends Content {
     async loadGrid() {
         try {
             const results = await this.apiServerHttpClient.getJourneyCategoriesV1();
-        
+
             const tbody = this.$document.find('#tb-journey-category tbody');
             tbody.html("");
 

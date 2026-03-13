@@ -110,11 +110,7 @@ body {
 
 .navbar-brand {
   color: #fff !important;
-  font-size: 24px !important;
-}
-
-.navbar-brand:hover {
-  color: #ccc !important;
+  font-size: 18px !important;
 }
 
 /* Sidebar Links */
@@ -151,10 +147,6 @@ body {
     width: 90%;
     max-width: 1200px; /* Or any width you prefer */
   }
-}
-
-.base-text-editor  {
-  height: 200px;
 }
 
 .swal2-title {
@@ -229,7 +221,6 @@ table.dataTable thead .sorting_desc:after {
   background-color: #f5f5f5;
 }
 
-
 .label-center-container {
     display: flex;
     flex-wrap: wrap;       /* Crucial: Prevents transpassing bounds */
@@ -242,4 +233,17 @@ table.dataTable thead .sorting_desc:after {
     display: inline-block; /* Ensures padding/margin work correctly */
     white-space: normal;   /* Allows text inside a single label to wrap if tiny */
     font-size: 90%;        /* Optional: slightly smaller text fits better */
+}
+
+[data-show="true"] {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-in;
+}
+
+/* Optional: Hide it when "false" */
+[data-show="false"] {
+  display: none;
+  opacity: 0;
 }

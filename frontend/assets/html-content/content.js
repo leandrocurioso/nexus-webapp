@@ -1,14 +1,23 @@
-import Quill from 'quill';
 import DataTable from 'datatables.net-bs';
 import moment from 'moment';
 
 class Content {
 
-    constructor($document) {
-        this.$document = $document; 
+    constructor(options) {
+        this.options = options;
         this.onceExecuted = false;
-        this.$document.on(`${this.constructor.name}$ComponentLoaded`, this.onLoad.bind(this));
+        this.contentLoaded = false;
+        this.$document = this.options.document;
     }
+
+    load(app, selector = `[data-content-handler="${this.options.contentName}"]`) {
+        $(selector).load(this.options.contentPath, () => {
+            app.totalContentLoaded++;
+            this.contentLoaded = true;
+        });
+    }
+
+    init() {}
 
     stripTags(html) {
         return html.replace(/<[^>]*>?/gm, '');
@@ -18,27 +27,6 @@ class Content {
         return moment(datetimeStr).format('DD/MM/YYYY HH:mm:ss');
     }
     
-    setHtmlEditor(selector) {
-
-        while($(selector).length !== 0) {
-            break;
-        }
-        
-        return new Quill(selector, {
-            modules: {
-                toolbar: [
-                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                    [{ 'align': [] }],
-                    [{ list: 'ordered' }, { list: 'bullet' }],
-                    ['bold', 'italic'],
-                    [{ 'color': [] }, { 'background': [] }],          
-                    ['link', 'blockquote', 'code-block',],
-                ],
-            },
-            theme: 'snow',
-        });
-    }
-
     setDataTable(selector) {
         return new DataTable(selector, {
             order: [[1, 'asc']],
@@ -94,9 +82,11 @@ class Content {
         $select.trigger("change.select2");
     }
 
-    setSelect2Multiple(selector, placeholder) {
-        return $(selector).select2({
-            placeholder: placeholder,
+    setSelect2Multiple(selector) {
+        const $el = $(selector);
+        return $el.select2({
+            allowClear: false,
+            placeholder: $el.attr("placeholder")
         }).on('select2:select', (evt) => {
             var $element = $(evt.params.data.element);
             var $target = $(evt.target)

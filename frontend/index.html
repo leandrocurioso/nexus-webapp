@@ -3,33 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus - Service Catalog</title>
-
-    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-bs/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-responsive-bs/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-colreorder-bs/css/colReorder.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-columncontrol-bs/css/columnControl.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-responsive-bs/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-scroller-bs/css/scroller.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-searchpanes-bs/css/searchPanes.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-select-bs/css/select.bootstrap.min.css">
-    <link rel="stylesheet" href="node_modules/datatables.net-staterestore-bs/css/stateRestore.bootstrap.min.css">
-
-    <link rel="stylesheet" href="node_modules/select2/dist/css/select2.min.css">
-    <link rel="stylesheet" href="node_modules/quill/dist/quill.snow.css">
-
-    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-    <link href="assets/css/dashboard.css" rel="stylesheet">
-
+    <title>Nexus</title>
 </head>
 <body>
-
     <div id="root">
-        <div data-handler="HeaderContent" data-content="assets/html-content/header/header-content.html"></div>
-        <div data-handler="PageContent" data-content="assets/html-content/page-content/page-content.html"></div>
-    </div>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+            <div class="navbar-header">
+                <span class="navbar-brand bold-font">Nexus - Catálogo de Serviços & Jornadas</span>
+            </div>
+            </div>
+        </nav>
 
+        <div class="container-fluid">
+            <div class="row">
+                <div data-content-handler="SideMenuContent"></div>
+                <div data-group="Page" data-show="true" data-content-handler="PageMainContent"></div>
+                <div data-group="Page" data-show="false" data-content-handler="PageJourneyCategoriesContent"></div>
+                <div data-group="Page" data-show="false" data-content-handler="PageServicesContent"></div>
+                <div data-group="Page" data-show="false" data-content-handler="PageJourneysContent"></div>         
+            </div>
+        </div>
+    </div>
 </body>
-    <script src="assets/js/_bundle.js"></script>
 </html>

@@ -1,14 +1,16 @@
 import Content from "../content.js"; 
-import { loadComponent, getHandler } from "../../js/core.js";
 import Swal from 'sweetalert2'
 import DataTable from 'datatables.net-bs';
-import moment from 'moment';
 import jszip from 'jszip';
 
 class PageServicesContent extends Content {
 
-    constructor($document, apiServerHttpClient) {
-        super($document);
+    constructor(options, apiServerHttpClient) {
+        super(Object.assign({}, {
+            uri: "/services",
+            contentName: "PageServicesContent",
+            contentPath: "assets/html-content/page-services-content/page-services-content.html",
+        }, options));
         this.apiServerHttpClient = apiServerHttpClient;
     }
 
@@ -17,10 +19,8 @@ class PageServicesContent extends Content {
 
         // Get a specific value
         const serviceId = params.get('service_id');
-        if (serviceId &&  serviceId.toLowerCase()) {
-            const cleanURL = window.location.origin + window.location.pathname + window.location.hash.toLowerCase();
-            window.history.replaceState({}, document.title, cleanURL);
 
+        if (serviceId &&  serviceId.toLowerCase()) {
             this.resetForm();
             var text = "Editar Serviço";
             await this.getService(serviceId);
@@ -41,17 +41,14 @@ class PageServicesContent extends Content {
                 placeholder: "Selecione um produto",
             });
 
-            this.setSelect2Multiple("#slt-dependency-products", "Selecione os produto(s)");
-
-            this.txtServiceDescriptionQuill = this.setHtmlEditor('#txt-service-description');
-            this.txtServiceOrrQuill = this.setHtmlEditor('#txt-service-orr');
+            this.setSelect2Multiple("#slt-dependency-products");
 
             $('#form-create-service').on('submit', async(event) =>{
                 event.preventDefault();
                 await this.saveService();
             });
 
-            $(document).on('click', ".btn-grid-delete-service", async(event) =>{
+            this.$document.on('click', ".btn-grid-delete-service", async(event) =>{
                 const serviceId = $(event.currentTarget).data("id");
 
                 await Swal.fire({
@@ -82,8 +79,7 @@ class PageServicesContent extends Content {
                     await this.loadGrid();
                 }
             });
-            
-
+    
             $("#btn-create-service").on('click', async (event) => {
                 var button = $(event.currentTarget);
                 var text = button.data('modal-title');
@@ -119,14 +115,13 @@ class PageServicesContent extends Content {
                 $("#form-create-service-modal").modal("show");
             })
  
-
         }
         this.onceExecuted = true;
     }
 
-    onLoad(event, options) {
+    init(options) {
         this.once();
-        if (options.loadData) {
+        if (options.load) {
             this.loadGrid().then(async () => {
                 await this.viewEdit();
             });
@@ -134,13 +129,12 @@ class PageServicesContent extends Content {
     }
 
     async saveService() {
-        
         let validationTxt = "";
         
         const payload = {
             service_name: $("#txt-service-name").val().trim(),
-            service_description: this.txtServiceDescriptionQuill.root.innerHTML,
-            service_orr: this.txtServiceOrrQuill.root.innerHTML,
+            service_description: $("#txt-service-description").val(),
+            service_orr: $('#txt-service-orr').val(),
             product_id: $("#slt-service-products").val(),
             active: $("#chk-service-active").is(":checked"),
             dependency_product_ids: $("#slt-dependency-products").val().filter(v => v.trim() !== '').join(",")
@@ -150,6 +144,7 @@ class PageServicesContent extends Content {
         if (!Number.isNaN(serviceId)) {
             payload.service_id = serviceId;
         }
+
         // Validate 
         if (!payload.service_name || payload.service_name.length < 2) {
             validationTxt += "O nome do serviço é obrigatório! <br/>";
@@ -157,6 +152,13 @@ class PageServicesContent extends Content {
 
          if (!payload.product_id || payload.product_id.length === 0) {
             validationTxt += "A seleção do produto é obrigatória! <br/>";
+        }
+
+        if (payload.dependency_product_ids && payload.dependency_product_ids.length > 0) {
+            const foundProdIdx = payload.dependency_product_ids.split(",").findIndex(x => x === payload.product_id);
+            if (foundProdIdx !== -1) {
+                validationTxt += "Você não pode colocar um produto dependente já selecionado em produto! <br/>";
+            }
         }
 
         if (validationTxt.length > 0) {
@@ -203,9 +205,9 @@ class PageServicesContent extends Content {
             .not('#txt-service-created-at, #txt-service-updated-at, :submit, :button')
             .val('');
 
-        $("#hdn-service-id").val("")
-        this.txtServiceDescriptionQuill.setContents([]);
-        this.txtServiceOrrQuill.setContents([]);
+        $("#hdn-service-id").val("");
+        $("#txt-service-description").val("");
+        $('#txt-service-orr').val("");
         $('#slt-service-products').val(null).trigger('change');
         $("#slt-dependency-products").val("").trigger("change");
         $("#chk-service-active").prop("checked", true);
@@ -250,17 +252,17 @@ class PageServicesContent extends Content {
                 $("#slt-dependency-products").val(order).trigger("change");
             }
 
-            this.txtServiceDescriptionQuill.root.innerHTML = service.service_description;
-            this.txtServiceOrrQuill.root.innerHTML = service.service_orr;
+            $("#txt-service-description").val(service.service_description);
+            $("#txt-service-orr").val(service.service_orr);
             $("#form-create-service-modal").modal("show");
             $("#chk-service-active").prop("checked", service.service_active);
 
             if (service.service_created_at) {
-                $("#txt-service-created-at").val(service.service_created_at);
+                $("#txt-service-created-at").val(this.toPtBrDatetime(service.service_created_at));
             } 
 
             if (service.service_created_at !== service.service_updated_at) {
-                $("#txt-service-updated-at").val(service.service_updated_at);
+                $("#txt-service-updated-at").val(this.toPtBrDatetime(service.service_updated_at));
             } else {
                 $("#txt-service-updated-at").val("Ainda não atualizado");
             }

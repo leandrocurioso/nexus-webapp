@@ -55,7 +55,8 @@ class JourneyCategoriesRepository {
             SET 
                 name = ?,
                 description = ?,
-                active = ?
+                active = ?,
+                updated_at = NOW()
             WHERE 
                 id = ?;
         `;

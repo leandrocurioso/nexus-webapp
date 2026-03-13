@@ -1,18 +1,47 @@
-const webpack = require('webpack');
-const path = require('path');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    plugins: [
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
-        }),
+  mode: "production",
 
+  entry: "./assets/js/boot.js",
+
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "_bundle.js",
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.scss$/,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
     ],
-    entry: path.resolve(__dirname, 'assets', 'js', 'boot.js'),
-    output: {
-        filename: '_bundle.js',
-        path: path.resolve(__dirname, 'assets', 'js')
-    },
-    mode: 'production',
+  },
+
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./index.html",
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      "window.jQuery": "jquery",
+    }),
+    new CopyPlugin({
+      patterns: [
+        { 
+          from: path.resolve(__dirname, "assets"), 
+          to: path.resolve(__dirname, "dist/assets") 
+        },
+      ],
+    }),
+  ],
 };

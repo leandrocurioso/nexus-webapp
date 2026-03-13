@@ -69,6 +69,15 @@ class ServicesV1Route {
             validationsErrors.push("O id do produto está em formato incorreto!");
         }
 
+        if (req.body.dependency_product_ids && req.body.dependency_product_ids.length > 0) {
+            const foundProdIdx = req.body.dependency_product_ids.split(",").findIndex(x => x === req.body.product_id);
+            if (foundProdIdx !== -1) {
+                validationsErrors.push("Você não pode colocar um produto dependente já selecionado em produto!");
+            }
+        }
+
+
+
         if (validationsErrors.length > 0) {
             return res.status(400).json({
                 errors: validationsErrors
