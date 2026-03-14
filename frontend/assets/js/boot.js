@@ -24,7 +24,6 @@ import 'datatables.net-staterestore-bs';
 import '../css/ie10-viewport-bug-workaround.css';
 import '../css/dashboard.css';
 
-import AppConfig from "./config.js";
 import ApiServerHttpClient from "./api-server-http-client.js";
 import { registerContent, setupApp, startApp, getContentByUri } from "./core.js";
 import SidebarContent from "../html-content/side-menu-content/side-menu-content.js";
@@ -37,7 +36,7 @@ $(function($e) {
 
     const app = setupApp($(document));
 
-    const apiServerHttpClient = new ApiServerHttpClient(AppConfig.apiServerBaseUri);
+    const apiServerHttpClient = new ApiServerHttpClient(process.env.SERVER_API_HOST);
 
     registerContent(app, SidebarContent, "SidebarContent");
     registerContent(app, PageMainContent, "PageMainContent");

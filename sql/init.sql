@@ -1,6 +1,17 @@
 -- Desabilitar verificação de chaves estrangeiras para facilitar o DROP
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP DATABASE IF EXISTS `nexus`;
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
+CREATE DATABASE `nexus`
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE `nexus`;
+
 -- Drop das tabelas caso já existam
 DROP TABLE IF EXISTS journeys;
 DROP TABLE IF EXISTS services;
@@ -19,7 +30,7 @@ CREATE TABLE teams (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active TINYINT(1) DEFAULT 1
-);
+) CHARACTER SET utf8mb4;;
 
 -- 2. Tabela: projects
 CREATE TABLE projects (
@@ -28,7 +39,8 @@ CREATE TABLE projects (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active TINYINT(1) DEFAULT 1
-);
+) CHARACTER SET utf8mb4;;
+
 
 -- 3. Tabela: products
 CREATE TABLE products (
@@ -39,7 +51,7 @@ CREATE TABLE products (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active TINYINT(1) DEFAULT 1,
     CONSTRAINT fk_product_team FOREIGN KEY (id_team) REFERENCES teams(id)
-);
+) CHARACTER SET utf8mb4;;
 
 -- 4. Tabela: journey_categories
 CREATE TABLE journey_categories (
@@ -49,7 +61,7 @@ CREATE TABLE journey_categories (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active TINYINT(1) DEFAULT 1
-);
+) CHARACTER SET utf8mb4;;
 
 -- 5. Tabela: services
 CREATE TABLE services (
@@ -63,7 +75,7 @@ CREATE TABLE services (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active TINYINT(1) DEFAULT 1,
     CONSTRAINT fk_service_product FOREIGN KEY (id_product) REFERENCES products(id)
-);
+) CHARACTER SET utf8mb4;;
 
 -- 6. Tabela: journeys
 CREATE TABLE journeys (
@@ -81,4 +93,62 @@ CREATE TABLE journeys (
     active TINYINT(1) DEFAULT 1,
     CONSTRAINT fk_journey_category FOREIGN KEY (id_journey_category) REFERENCES journey_categories(id),
     CONSTRAINT fk_journey_project FOREIGN KEY (id_project) REFERENCES projects(id)
-);
+) CHARACTER SET utf8mb4;;
+
+ALTER SCHEMA `nexus`  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+-- 1. Insert Teams
+INSERT INTO teams (name) VALUES 
+('Mythbusters'),
+('Gyodai'),
+('CloudWalkers'),
+('Machi Picchu'),
+('Ringo Starr'),
+('Elpis'),
+('MAAT'),
+('Pressman'),
+('Defy Hope'),
+('Ghost'),
+('Armada'),
+('Containers PaaS'),
+('Containers Products'),
+('Moneyball'),
+('Zeno');
+
+-- 2. Insert Projects
+INSERT INTO projects (name) VALUES 
+('Camada Zero');
+
+-- 3. Insert Products (Referencing id_team)
+INSERT INTO products (id_team, name) VALUES 
+(1, 'Compass Router HTTP'),
+(1, 'Compass Router Kafka'),
+(2, 'Compass Data'),
+(2, 'CompassDB'),
+(2, 'Compass HC'),
+(1, 'Compass Reconciliator HTTP'),
+(1, 'Compass Reconciliator Kafka'),
+(3, 'Cloud Adapter'),
+(7, 'CEEP'),
+(9, 'Controlplane (Agent)'),
+(9, 'czctl'),
+(4, 'WebConsole'),
+(10, 'Pipelines');
+
+-- 4. Insert Services (Referencing id_product)
+-- INSERT INTO services 
+-- (id_product, name, description) 
+-- VALUES 
+-- (13,  'Carregar célula', 'Orquestrador para colocar uma célula em carga'),
+-- (11, 'Carregar célula', 'CLI para colocar uma célula em carga'),
+-- (10,  'Carregar célula', 'API para colocar uma célula em carga pelo controlplane'),
+-- (1,  'Carregar célula', 'API para colocar uma célula em carga pelo Compass');
+
+-- 5. Insert Journey Categories
+INSERT INTO journey_categories
+(name, description) 
+VALUES 
+('On Boarding', 'Jornadas relacionadas ao processo de on boarding'),
+('Pós On Boarding', 'Jornadas relacionadas ao processo de pós on boarding'),
+('Deployments', 'Jornadas relacionadas ao processo de deploy'),
+('Ações de Crise', 'Jornadas relacionadas a ações específicas, como colocar uma célula em carga');

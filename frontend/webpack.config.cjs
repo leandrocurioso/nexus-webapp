@@ -9,7 +9,7 @@ module.exports = {
   entry: "./assets/js/boot.js",
 
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "..", "backend", "public"),
     filename: "_bundle.js",
   },
 
@@ -27,6 +27,9 @@ module.exports = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      "process.env.SERVER_API_HOST": process.env.SERVER_API_HOST ? JSON.stringify(process.env.SERVER_API_HOST) : JSON.stringify("http://localhost:3010")
+    }),
     new HtmlWebpackPlugin({
       template: "./index.html",
     }),
@@ -39,7 +42,7 @@ module.exports = {
       patterns: [
         { 
           from: path.resolve(__dirname, "assets"), 
-          to: path.resolve(__dirname, "dist/assets") 
+          to: path.resolve(__dirname, "..", "backend", "public", "assets") 
         },
       ],
     }),
