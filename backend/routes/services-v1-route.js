@@ -76,8 +76,6 @@ class ServicesV1Route {
             }
         }
 
-
-
         if (validationsErrors.length > 0) {
             return res.status(400).json({
                 errors: validationsErrors

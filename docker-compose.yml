@@ -20,10 +20,7 @@ services:
   nexus:
     container_name: nexus
     restart: on-failure
-    build:
-      context: .
-      args:
-        - SERVER_API_HOST=http://localhost:3020
+    image: nexus:latest
     depends_on:
       - db
     links:
@@ -31,4 +28,6 @@ services:
     ports:
       - "3020:3010"
     environment:
-      MYSQL_CONNECTION_STRING: mysql://root:rootpassword@db:3306/nexus
+      NEXUS_MYSQL_CONNECTION_STRING: mysql://root:rootpassword@db:3306/nexus
+      NEXUS_SERVER_API_HOST: http://localhost:3020
+      NEXUS_SERVER_USERS: "YWRtaW46MTIzNDU2"

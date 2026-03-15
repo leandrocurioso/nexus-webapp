@@ -152,7 +152,7 @@ class PageJourneysContent extends Content {
        
             for (let index = 0; index < item.journey.services.length; index++) {
                 const service = item.journey.services[index];
-                
+
                 let depHtml = ``;
                 if (service.service_dependency_product_ids && service.service_dependency_product_ids.split(",").length > 0) {
                    const deps = service.service_dependency_product_ids.split(",").map(x => parseInt(x, 10));
@@ -161,7 +161,7 @@ class PageJourneysContent extends Content {
                         const prodId = deps[index2];
                         const prod = item.products[item.products.findIndex(x => x.product_id === prodId)];
                         if (prod ) {
-                            depTxt += `<span class="label label-primary">${prod.product_name}</span>`;
+                            depTxt += `<span class="label label-default">${prod.product_name}</span>`;
                         }
                    }
                         
@@ -175,12 +175,12 @@ class PageJourneysContent extends Content {
                         <a style="font-size:20px;" target="_blank" href="/services?service_id=${service.service_id}">${index+1} - ${service.service_name}</a>
                         <p class="bold-font" style="margin-bottom:0px;">Produto</p>
                         <div class="label-center-container">
-                            <span class="label label-success">${service.product_name}</span>
+                            <span class="label label-primary">${service.product_name}</span>
                         </div>
 
                         <p class="bold-font" style="margin-bottom:0px;">Time</p>
                         <div class="label-center-container">
-                            <span class="label label-success">${service.team_name}</span>
+                            <span class="label label-primary">${service.team_name}</span>
                         </div>
                       
     

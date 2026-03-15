@@ -53,8 +53,23 @@ initDb()
 
 
         // Configure the auth middleware
+        const users = {};
+
+        if (!process.env.NEXUS_SERVER_USERS) {
+            process.env.NEXUS_SERVER_USERS = "YWRtaW46MTIzNDU2"
+        } 
+        
+        const auths = process.env.NEXUS_SERVER_USERS.split(" ").map(x => {
+            return Buffer.from(x, "base64").toString("utf-8");
+        });
+        
+        for (let index = 0; index < auths.length; index++) {
+            const auth = auths[index].split(":");
+            users[auth[0]] = auth[1];  
+        }
+        
         app.use(basicAuth({
-            users: { 'admin': 'cz123456!' },
+            users: users,
             challenge: true, // This pops up the browser login prompt
             unauthorizedResponse: {
                 success: false,

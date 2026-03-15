@@ -25,7 +25,7 @@ import '../css/ie10-viewport-bug-workaround.css';
 import '../css/dashboard.css';
 
 import ApiServerHttpClient from "./api-server-http-client.js";
-import { registerContent, setupApp, startApp, getContentByUri } from "./core.js";
+import { registerContent, setupApp, startApp, getContentByUri, getConfigValue } from "./core.js";
 import SidebarContent from "../html-content/side-menu-content/side-menu-content.js";
 import PageMainContent from "../html-content/page-main-content/page-main-content.js";
 import PageServicesContent from "../html-content/page-services-content/page-services-content.js";
@@ -34,43 +34,49 @@ import PageJourneyCategoriesContent from "../html-content/page-journey-categorie
 
 $(function($e) {
 
-    const app = setupApp($(document));
+    setupApp($(document), (app) => {
+        try {
+            const apiServerHttpClient = new ApiServerHttpClient(getConfigValue(app.config,"NEXUS_SERVER_API_HOST"));
+            
+            registerContent(app, SidebarContent, "SidebarContent");
+            registerContent(app, PageMainContent, "PageMainContent");
+            registerContent(app, PageJourneyCategoriesContent, "PageJourneyCategoriesContent", [
+                apiServerHttpClient
+            ]);
+            registerContent(app, PageServicesContent, "PageServicesContent", [
+                apiServerHttpClient
+            ]);
+            registerContent(app, PageJourneysContent, "PageJourneysContent", [
+                apiServerHttpClient
+            ]);
 
-    const apiServerHttpClient = new ApiServerHttpClient(process.env.SERVER_API_HOST);
-
-    registerContent(app, SidebarContent, "SidebarContent");
-    registerContent(app, PageMainContent, "PageMainContent");
-    registerContent(app, PageJourneyCategoriesContent, "PageJourneyCategoriesContent", [
-        apiServerHttpClient
-    ]);
-    registerContent(app, PageServicesContent, "PageServicesContent", [
-        apiServerHttpClient
-    ]);
-    registerContent(app, PageJourneysContent, "PageJourneysContent", [
-        apiServerHttpClient
-    ]);
-
-    startApp(app, {
-        onReady: () => {
-            const uri = window.location.pathname.toLowerCase();
-            const menuItem = $("#sidebar-menu li").find(`a[href='${uri}']`);
-            if (menuItem.length > 0 && uri === menuItem.attr("href")) {
-                $("#sidebar-menu li").removeClass("active");
-                menuItem.parent("li").addClass("active");
-                $(`[data-group="Page"]`).attr("data-show",false);
-                const content = getContentByUri(app, uri);
-                if (content) {
-                    content.init({ load: true });
+            startApp(app, {
+                onReady: () => {
+                    const uri = window.location.pathname.toLowerCase();
+                    const menuItem = $("#sidebar-menu li").find(`a[href='${uri}']`);
+                    if (menuItem.length > 0 && uri === menuItem.attr("href")) {
+                        $("#sidebar-menu li").removeClass("active");
+                        menuItem.parent("li").addClass("active");
+                        $(`[data-group="Page"]`).attr("data-show",false);
+                        const content = getContentByUri(app, uri);
+                        if (content) {
+                            content.init({ load: true });
+                            $(`[data-content-handler="${content.options.contentName}"]`).attr("data-show",true);
+                        }
+                    }
+                },
+                onRouteClickListener: (e, content) => {
+                    $("#sidebar-menu li").removeClass("active");
+                    $(e.currentTarget).parent("li").addClass("active");
+                    $(`[data-group="Page"]`).attr("data-show",false);
                     $(`[data-content-handler="${content.options.contentName}"]`).attr("data-show",true);
-                }
-            }
-        },
-        onRouteClickListener: (e, content) => {
-            $("#sidebar-menu li").removeClass("active");
-            $(e.currentTarget).parent("li").addClass("active");
-            $(`[data-group="Page"]`).attr("data-show",false);
-            $(`[data-content-handler="${content.options.contentName}"]`).attr("data-show",true);
-        },
+                },
+            });
+            
+        } catch (err) {
+            console.error(err);
+        }
+
     });
 
 });

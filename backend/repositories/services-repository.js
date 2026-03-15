@@ -97,18 +97,6 @@ class ServiceRepository extends Repository {
 
     async getById(id) {
         const sql = `
-            SELECT *
-            FROM services
-            WHERE id = ?
-        `;
-
-        const [result] = await this.db.execute(sql, [id]);
-        if (result.length > 0) return result[0];
-        return null;
-    }
-
-    async getById(id) {
-        const sql = `
             ${this.getBaseSelectQuery()}
             WHERE s.id = ?
         `;
@@ -119,24 +107,25 @@ class ServiceRepository extends Repository {
     }
 
     async getByIds(ids) {
-
-        let sqlWhere = "";
-        for (let index = 0; index < ids.length; index++) {
-            const id = ids[index];
-            if (index === 0) {
-                sqlWhere += `s.id = ? \n`
-                continue;
-            }
-            sqlWhere += `OR s.id = ? \n`
-        }
+        const maskIds = ids.map(x => "?").join(",");
 
         const sql = `
             ${this.getBaseSelectQuery()}
             WHERE 
-                ${sqlWhere}
+                s.id IN (${maskIds})
+            ORDER BY 
+                FIELD(s.id, ${maskIds});
         `;
 
-        const [result] = await this.db.execute(sql, ids);
+        const values1 = [];
+        const values2 = [];
+        for (let index = 0; index < ids.length; index++) {
+            values1.push(ids[index]);
+            values2.push(ids[index]);
+        }
+        
+        const [result] = await this.db.execute(sql, values1.concat(values2));
+
         if (result.length > 0) return result;
         return [];
     }

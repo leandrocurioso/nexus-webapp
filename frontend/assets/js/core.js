@@ -1,14 +1,16 @@
-function setupApp($document) {
-    const app = {
-        $document,
-        contentContainer: new Map(),
-        totalContentLoaded: 0,
-        isLoaded: () => {
-           return app.totalContentLoaded == app.contentContainer.size;
-        }
-    };;
-
-    return app;
+function setupApp($document, initCb, configPath = "/config.json") {
+    $.getJSON(configPath, (config) => {
+        const app = {
+            config,
+            $document,
+            contentContainer: new Map(),
+            totalContentLoaded: 0,
+            isLoaded: () => {
+                return app.totalContentLoaded == app.contentContainer.size;
+            }
+        };
+        initCb(app);
+    });
 }
 
 function registerContent(app, cls, key, args = []) {
@@ -61,10 +63,24 @@ function getContentByUri(app, uri) {
     return null;
 }
 
+function getConfigValue(config, key = "") {
+   try {
+    if (!config) throw new Error(`Config object does not exist while getting: ${key}`);
+    const value = config[key];
+    if (!value) throw new Error(`Key ${key} not found in condig`);
+    if (value.value) return value.value;
+    if (!value.value && value.default) return value.default;
+    throw new Error(`There is no value or default for the config key: ${key}`);
+   } catch (err) {
+    throw err;
+   }
+}
+
 export {
     setupApp,
     registerContent,
     startApp,
     registerRouteClickListener,
     getContentByUri,
+    getConfigValue,
 };

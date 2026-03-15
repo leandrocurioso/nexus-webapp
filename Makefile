@@ -1,9 +1,5 @@
-build:
-	chmod +x scripts/build.sh
-	bash scripts/build.sh
-
 docker-build: 
-	docker build -t nexus:latest --build-arg SERVER_API_HOST=http://localhost:3020 .
+	docker build -t nexus:latest .
 
 docker-publish: docker-build
 	docker tag nexus leandrocurioso/nexus:latest
