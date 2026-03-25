@@ -1,0 +1,5 @@
+{
+  "NEXUS_SERVER_API_HOST": {
+    "default": "http://localhost:3010"
+  }
+}

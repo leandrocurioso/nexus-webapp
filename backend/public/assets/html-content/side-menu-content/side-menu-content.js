@@ -1,0 +1,1 @@
+import Content from"../content.js";class SideMenuContent extends Content{constructor(t){super(Object.assign({},{contentName:"SideMenuContent",contentPath:"assets/html-content/side-menu-content/side-menu-content.html"},t))}}export default SideMenuContent;
